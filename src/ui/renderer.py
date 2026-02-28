@@ -26,6 +26,7 @@ class ModernInformationRenderer:
 
     def draw_sidebar_background(self, target_display_surface):
         sidebar_bounding_rectangle = pygame.Rect(
+                # x, y, x width, y width
             self.grid_pixel_width, 0, self.sidebar_pixel_width, max(self.grid_pixel_height, 600)
         )
         pygame.draw.rect(target_display_surface, self.sidebar_background_color, sidebar_bounding_rectangle)

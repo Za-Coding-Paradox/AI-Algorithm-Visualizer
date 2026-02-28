@@ -83,9 +83,9 @@ class PathfindingVisualizerApp:
             self.display_window.refresh_display_state()
 
             # RUNNING STATE LOGIC (Trace Playback)
+            # --- RUNNING STATE LOGIC (Trace Playback) ---
             if self.current_app_state == APP_STATE_RUNNING:
                 if len(self.active_execution_trace) > 0:
-                    # Pop multiple steps per frame to speed up the animation
                     steps_per_frame = 5 
                     for _ in range(min(steps_per_frame, len(self.active_execution_trace))):
                         trace_step = self.active_execution_trace.pop(0)
@@ -96,6 +96,8 @@ class PathfindingVisualizerApp:
                             self.metrics_data["visited_count"] += 1
                         elif trace_step["action"] == "MAKE_PATH":
                             self.metrics_data["path_cost"] += 1
+                            # If we draw a path, it's a success
+                            self.metrics_data["success"] = True
                 else:
                     # Trace is finished playing, shift to RESULT state
                     self.current_app_state = APP_STATE_RESULT
@@ -144,22 +146,21 @@ class PathfindingVisualizerApp:
                         if current_event.key == pygame.K_h:
                             self.current_heur_index = (self.current_heur_index + 1) % len(self.heuristic_names)
 
-                        # START SEARCH
                         if current_event.key == pygame.K_SPACE:
                             if self.environment_manager.agent_start_node and self.environment_manager.navigation_goal_node:
-                                # Grab selected functions
                                 algo_func = self.available_algorithms[active_algo_name]
                                 heur_func = self.available_heuristics[active_heur_name]
                                 
-                                # Measure pure compute time
                                 start_time = time.perf_counter()
                                 self.active_execution_trace = algo_func(self.environment_manager, heur_func)
                                 end_time = time.perf_counter()
                                 
-                                # Record compute metrics and shift state to RUNNING
+                                # Reset all metrics for the new run
                                 self.metrics_data["execution_time"] = (end_time - start_time) * 1000
                                 self.metrics_data["visited_count"] = 0
                                 self.metrics_data["path_cost"] = 0
+                                # Start as False 
+                                self.metrics_data["success"] = False 
                                 
                                 self.current_app_state = APP_STATE_RUNNING
 
