@@ -1,0 +1,28 @@
+[tools]
+# Specifies the exact version of Python 3.14.3 managed by mise
+python = "3.14.3"
+
+[settings]
+# Tells mise to create a .venv folder if it doesn't exist
+python_venv_auto_create = true
+
+[env]
+# FORCED PATHING: This ensures your shell always prefers the project venv
+VIRTUAL_ENV = "{{config_root}}/.venv"
+PATH = "{{config_root}}/.venv/bin:{{env.PATH}}"
+# Allows you to import 'engine' or 'algorithms' from 'src/entry/main.py'
+PYTHONPATH = "{{config_root}}/src"
+
+[tasks.install]
+description = "Install dependencies into the managed venv"
+# Using 'pip' here will now correctly point to the .venv/bin/pip
+run = "pip install pygame-ce==2.5.6 numpy"
+
+[tasks.run]
+description = "Start the Pathfinding Visualizer"
+alias = "start"
+run = "python src/entry/main.py"
+
+[tasks.clean]
+description = "Wipe the environment for a fresh start"
+run = "rm -rf .venv"
