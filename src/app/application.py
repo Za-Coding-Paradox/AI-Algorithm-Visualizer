@@ -19,8 +19,12 @@ APP_STATE_RESULT = "RESULT"
 
 def translate_mouse_position_to_grid_indices(mouse_pixel_position, row_limit, column_limit, grid_pixel_width):
     node_pixel_gap = grid_pixel_width // max(row_limit, column_limit)
-    target_column_index = mouse_pixel_position[0] // node_pixel_gap
-    target_row_index = mouse_pixel_position[1] // node_pixel_gap
+
+    # Mouse X (horizontal) maps to the Grid's Row Index
+    target_row_index = mouse_pixel_position[0] // node_pixel_gap
+    # Mouse Y (vertical) maps to the Grid's Column Index
+    target_column_index = mouse_pixel_position[1] // node_pixel_gap
+
     return int(target_row_index), int(target_column_index)
 
 class PathfindingVisualizerApp:

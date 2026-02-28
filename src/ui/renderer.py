@@ -76,26 +76,36 @@ class ModernInformationRenderer:
             current_y_offset += 25
 
     def draw_result_popup_overlay(self, target_display_surface, metrics_dict):
-        """Draws a centered pop-up showing the final results over the grid."""
-        # Create a semi-transparent black overlay
-        overlay_surface = pygame.Surface((self.grid_pixel_width, self.grid_pixel_height))
-        overlay_surface.set_alpha(180) 
-        overlay_surface.fill((0, 0, 0))
-        target_display_surface.blit(overlay_surface, (0, 0))
+        """Draws a pop-up in the lower right showing the final results, maintaining grid visibility."""
         
-        # Create the Pop-up Box
-        popup_width, popup_height = 400, 250
-        popup_x = (self.grid_pixel_width // 2) - (popup_width // 2)
-        popup_y = (self.grid_pixel_height // 2) - (popup_height // 2)
+        popup_width, popup_height = 360, 220
         
+        # Position: Lower Right of the entire window
+        total_window_width = self.grid_pixel_width + self.sidebar_pixel_width
+        popup_x = total_window_width - popup_width - 20
+        popup_y = self.grid_pixel_height - popup_height - 20
+        
+        # Draw Background Box
         popup_rect = pygame.Rect(popup_x, popup_y, popup_width, popup_height)
-        pygame.draw.rect(target_display_surface, self.sidebar_background_color, popup_rect, border_radius=15)
-        pygame.draw.rect(target_display_surface, self.highlight_color, popup_rect, width=3, border_radius=15)
+        pygame.draw.rect(target_display_surface, self.sidebar_background_color, popup_rect, border_radius=12)
         
-        # Pop-up Text
-        header_surface = self.popup_header_font.render("SEARCH COMPLETE", True, self.highlight_color)
-        target_display_surface.blit(header_surface, (popup_x + 50, popup_y + 30))
+        # Check Success/Failure State
+        is_successful = metrics_dict.get("success", False)
+        if is_successful:
+            status_color = (0, 255, 100) # Green 
+            header_text = "SEARCH SUCCESSFUL"
+        else:
+            status_color = (255, 50, 50) # Red
+            header_text = "SEARCH FAILED (NO PATH)"
+            
+        # Draw Border matching the state
+        pygame.draw.rect(target_display_surface, status_color, popup_rect, width=3, border_radius=12)
         
+        # Render Header Text
+        header_surface = self.dashboard_header_font.render(header_text, True, status_color)
+        target_display_surface.blit(header_surface, (popup_x + 25, popup_y + 20))
+        
+        # Render Body Stats
         body_lines = [
             f"Total Nodes Visited: {metrics_dict.get('visited_count', 0)}",
             f"Final Path Cost: {metrics_dict.get('path_cost', 0)}",
@@ -105,8 +115,8 @@ class ModernInformationRenderer:
         ]
         
         for i, line in enumerate(body_lines):
-            line_surface = self.popup_body_font.render(line, True, self.sidebar_text_color)
-            target_display_surface.blit(line_surface, (popup_x + 40, popup_y + 80 + (i * 25)))
+            line_surface = self.dashboard_metric_font.render(line, True, self.sidebar_text_color)
+            target_display_surface.blit(line_surface, (popup_x + 25, popup_y + 65 + (i * 25)))
 
     def render_complete_environment_frame(self, target_display_surface, environment_manager):
         target_display_surface.fill(WHITE)
