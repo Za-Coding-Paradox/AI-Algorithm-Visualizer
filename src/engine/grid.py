@@ -1,10 +1,6 @@
-from ui.constants import *
-
-class Node:
-
-    import pygame
+import pygame
 import random
-from engine.constants import *
+from ui.constants import *
 
 class GridNode:
     def __init__(self, row_index, column_index, pixel_width, total_row_count, total_column_count):
@@ -74,7 +70,7 @@ class GridNode:
     
 
     def construct_initial_grid(total_row_count, total_column_count, display_width):
-    """Requirement: Dynamic Grid Sizing."""
+        """Requirement: Dynamic Grid Sizing."""
 
         grid_matrix = []
         node_pixel_dimension = display_width // total_row_count
@@ -93,7 +89,7 @@ class GridNode:
         return grid_matrix
 
     def generate_procedural_obstacles(grid_matrix, obstacle_probability_density=0.3):
-    """Requirement: Random Map Generation."""
+        """Requirement: Random Map Generation."""
     
         for current_grid_row in grid_matrix:
             for individual_node in current_grid_row:

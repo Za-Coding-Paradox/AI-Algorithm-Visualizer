@@ -12,8 +12,8 @@ def render_grid_structural_lines(display_surface, total_rows, total_columns, gri
         pygame.draw.line(
             display_surface, 
             GRID_LINE_COLOR, 
-            (0, row_step * node_spacing), 
-            (total_columns * node_spacing, row_step * node_spacing)
+            (0, row_step * node_spacing),                           # start_pos (x, y) 
+            (total_columns * node_spacing, row_step * node_spacing) # end_pos (x, y)
         )
         
     # Draw Vertical Lines based on Column Count
@@ -24,3 +24,16 @@ def render_grid_structural_lines(display_surface, total_rows, total_columns, gri
             (col_step * node_spacing, 0), 
             (col_step * node_spacing, total_rows * node_spacing)
         )
+
+def render_node_to_surface(display_surface, node_object):
+    """Draws a single node's colored rectangle onto the surface."""
+    pygame.draw.rect(
+        display_surface, 
+        node_object.current_color, 
+        (
+            node_object.pixel_x_coordinate, 
+            node_object.pixel_y_coordinate, 
+            node_object.pixel_width,        # height
+            node_object.pixel_width         # width
+        )
+    )

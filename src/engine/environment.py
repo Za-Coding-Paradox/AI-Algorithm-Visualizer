@@ -2,14 +2,41 @@ import random
 from engine.grid import construct_initial_grid, generate_procedural_obstacles
 
 class SimulationEnvironment:
-    def __init__(self, total_row_count, display_pixel_width):
-        """Requirement: Dynamic Grid Sizing."""
+    def __init__(self, total_row_count, total_column_count, display_pixel_width):
+        """
+        Requirement: Dynamic Grid Sizing (Rows x Columns).
+        Initializes the agent's environment as a rectangular matrix of GridNodes.
+        """
         self.total_row_count = total_row_count
+        self.total_column_count = total_column_count
         self.display_pixel_width = display_pixel_width
-        self.grid_matrix = construct_initial_grid(total_row_count, display_pixel_width)
+        
+        # Calculate the size of each node based on the largest dimension to fit the window
+        self.individual_node_pixel_size = display_pixel_width // max(total_row_count, total_column_count)
         
         self.agent_start_node = None
         self.navigation_goal_node = None
+        
+        # Initialize the 2D grid matrix
+        self.grid_matrix = []
+        
+        for current_row_index in range(total_row_count):
+            # Create a new list for the current row
+            current_row_data = []
+            
+            for current_column_index in range(total_column_count):
+                # Instantiate a new node with descriptive parameters
+                newly_created_node = GridNode(
+                    current_row_index, 
+                    current_column_index, 
+                    self.individual_node_pixel_size, 
+                    total_row_count, 
+                    total_column_count
+                )
+                current_row_data.append(newly_created_node)
+            
+            # Add the completed row to the master grid matrix
+            self.grid_matrix.append(current_row_data)
 
     def reset_environment_state(self):
         """Clears the entire grid while preserving the dimensions."""
