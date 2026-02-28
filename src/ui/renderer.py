@@ -1,5 +1,5 @@
 import pygame
-from ui.constants import WHITE
+from ui.constants import * 
 from ui.grid_ui import render_node_to_surface, render_grid_structural_lines
 
 class ModernInformationRenderer:
@@ -9,9 +9,14 @@ class ModernInformationRenderer:
         self.grid_pixel_height = grid_pixel_height
         self.sidebar_pixel_width = sidebar_pixel_width
         
-        # Typography for the dashboard
+        # Typography for the dashboard metrics
         self.dashboard_header_font = pygame.font.SysFont("inter", 24, bold=True)
         self.dashboard_metric_font = pygame.font.SysFont("monospace", 18)
+        
+        # Typography for the grid node terrain weights
+        # Font size 14 works well as a baseline, keeping the numbers readable but not overwhelming
+        self.node_weight_font = pygame.font.SysFont("inter", 14, bold=True)
+        self.node_text_color = TEXT_COLOR 
         
         # Color palette for the modern sidebar
         self.sidebar_background_color = (30, 30, 35)
@@ -52,14 +57,19 @@ class ModernInformationRenderer:
             )
 
     def render_complete_environment_frame(self, target_display_surface, environment_manager):
-        """Orchestrates the drawing of the grid background, nodes, and structural lines."""
+        """Orchestrates the drawing of the grid background, nodes, node weights, and structural lines."""
         # Clear the grid area
         target_display_surface.fill(WHITE)
         
-        # Draw every individual node (The colored rectangles)
+        # Draw every individual node (Colored rectangles + Terrain Weights)
         for current_node_row in environment_manager.grid_matrix:
             for individual_grid_node in current_node_row:
-                render_node_to_surface(target_display_surface, individual_grid_node)
+                render_node_to_surface(
+                    target_display_surface, 
+                    individual_grid_node,
+                    text_font=self.node_weight_font,
+                    text_color=self.node_text_color
+                )
 
         # Draw the structural grid lines over the nodes
         render_grid_structural_lines(

@@ -16,7 +16,9 @@ def execute_greedy_best_first_search(environment_manager, heuristic_function):
     reset_algorithmic_data(environment_manager)
     
     execution_trace = []
-    tie_breaker_counter = 0
+    tie_breaker_counter = 0 
+    # using this as a counter to track which node came first (if two, or more nodes have same priority), or more.
+    # tie_breaker basically acts as the ticked id, for two vip customers.
     open_evaluation_queue = PriorityQueue()
     
     # f(n) = h(n)
