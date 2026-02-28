@@ -1,5 +1,5 @@
 import pygame
-from ui.constants import GRID_LINE_COLOR
+from ui.constants import * 
 
 def render_grid_structural_lines(display_surface, total_rows, total_columns, grid_pixel_width):
     """Draws lines for a dynamic Rows x Columns grid."""

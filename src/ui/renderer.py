@@ -1,5 +1,5 @@
 import pygame
-from ui.constants import * 
+from ui.constants import WHITE
 from ui.grid_ui import render_node_to_surface, render_grid_structural_lines
 
 class ModernInformationRenderer:
@@ -9,72 +9,114 @@ class ModernInformationRenderer:
         self.grid_pixel_height = grid_pixel_height
         self.sidebar_pixel_width = sidebar_pixel_width
         
-        # Typography for the dashboard metrics
+        # Typography
         self.dashboard_header_font = pygame.font.SysFont("inter", 24, bold=True)
-        self.dashboard_metric_font = pygame.font.SysFont("monospace", 18)
-        
-        # Typography for the grid node terrain weights
-        # Font size 14 works well as a baseline, keeping the numbers readable but not overwhelming
+        self.dashboard_metric_font = pygame.font.SysFont("monospace", 16)
         self.node_weight_font = pygame.font.SysFont("inter", 14, bold=True)
-        self.node_text_color = TEXT_COLOR 
         
-        # Color palette for the modern sidebar
+        # Pop-up Typography
+        self.popup_header_font = pygame.font.SysFont("inter", 32, bold=True)
+        self.popup_body_font = pygame.font.SysFont("inter", 20)
+        
+        # Colors
+        self.node_text_color = (130, 130, 130)
         self.sidebar_background_color = (30, 30, 35)
         self.sidebar_text_color = (220, 220, 220)
+        self.highlight_color = (64, 224, 208) # Turquoise for active selections
 
     def draw_sidebar_background(self, target_display_surface):
-        """Renders the dark background container for the UI controls."""
         sidebar_bounding_rectangle = pygame.Rect(
-            self.grid_pixel_width, 
-            0, 
-            self.sidebar_pixel_width, 
-            max(self.grid_pixel_height, 600) # Ensures sidebar covers minimum height
+            self.grid_pixel_width, 0, self.sidebar_pixel_width, max(self.grid_pixel_height, 600)
         )
         pygame.draw.rect(target_display_surface, self.sidebar_background_color, sidebar_bounding_rectangle)
 
-    def draw_metrics_dashboard(self, target_display_surface, visited_node_count, total_path_cost, execution_time_milliseconds):
-        """Requirement: Real-Time Metrics Dashboard."""
-        # Draw the background panel first
+    def draw_metrics_dashboard(self, target_display_surface, app_state, active_algorithm, active_heuristic, metrics_dict):
+        """Draws the sidebar, including controls and live metrics."""
         self.draw_sidebar_background(target_display_surface)
         
-        # Draw the Header
-        header_text_surface = self.dashboard_header_font.render("METRICS", True, self.sidebar_text_color)
-        target_display_surface.blit(header_text_surface, (self.grid_pixel_width + 20, 20))
+        # Application State Header
+        state_text = f"STATE: {app_state}"
+        state_surface = self.dashboard_header_font.render(state_text, True, self.highlight_color)
+        target_display_surface.blit(state_surface, (self.grid_pixel_width + 20, 20))
 
-        # Prepare the metric strings
-        metrics_data_labels = [
-            f"Nodes Visited: {visited_node_count}",
-            f"Path Cost: {total_path_cost}",
-            f"Time: {execution_time_milliseconds:.2f} ms"
+        # Configuration Settings (Algorithm & Heuristic)
+        config_labels = [
+            "--- CONFIGURATION ---",
+            f"Algo: {active_algorithm}",
+            f"Heur: {active_heuristic}",
+            "",
+            "--- CONTROLS ---",
+            "[A] Change Algorithm",
+            "[H] Change Heuristic",
+            "[Space] Start Search",
+            "[C] Clear Grid",
+            "[G] Generate Maze",
+            ""
         ]
 
-        # Render and place each metric line
-        for line_index, label_string in enumerate(metrics_data_labels):
-            metric_text_surface = self.dashboard_metric_font.render(label_string, True, self.sidebar_text_color)
-            target_display_surface.blit(
-                metric_text_surface, 
-                (self.grid_pixel_width + 20, 70 + (line_index * 35))
-            )
+        current_y_offset = 70
+        for label in config_labels:
+            text_color = self.highlight_color if "---" in label else self.sidebar_text_color
+            label_surface = self.dashboard_metric_font.render(label, True, text_color)
+            target_display_surface.blit(label_surface, (self.grid_pixel_width + 20, current_y_offset))
+            current_y_offset += 25
+
+        # Live Metrics
+        metrics_labels = [
+            "--- METRICS ---",
+            f"Visited: {metrics_dict.get('visited_count', 0)}",
+            f"Path Cost: {metrics_dict.get('path_cost', 0)}",
+            f"Time: {metrics_dict.get('execution_time', 0.0):.2f} ms"
+        ]
+        
+        for label in metrics_labels:
+            text_color = self.highlight_color if "---" in label else self.sidebar_text_color
+            label_surface = self.dashboard_metric_font.render(label, True, text_color)
+            target_display_surface.blit(label_surface, (self.grid_pixel_width + 20, current_y_offset))
+            current_y_offset += 25
+
+    def draw_result_popup_overlay(self, target_display_surface, metrics_dict):
+        """Draws a centered pop-up showing the final results over the grid."""
+        # Create a semi-transparent black overlay
+        overlay_surface = pygame.Surface((self.grid_pixel_width, self.grid_pixel_height))
+        overlay_surface.set_alpha(180) 
+        overlay_surface.fill((0, 0, 0))
+        target_display_surface.blit(overlay_surface, (0, 0))
+        
+        # Create the Pop-up Box
+        popup_width, popup_height = 400, 250
+        popup_x = (self.grid_pixel_width // 2) - (popup_width // 2)
+        popup_y = (self.grid_pixel_height // 2) - (popup_height // 2)
+        
+        popup_rect = pygame.Rect(popup_x, popup_y, popup_width, popup_height)
+        pygame.draw.rect(target_display_surface, self.sidebar_background_color, popup_rect, border_radius=15)
+        pygame.draw.rect(target_display_surface, self.highlight_color, popup_rect, width=3, border_radius=15)
+        
+        # Pop-up Text
+        header_surface = self.popup_header_font.render("SEARCH COMPLETE", True, self.highlight_color)
+        target_display_surface.blit(header_surface, (popup_x + 50, popup_y + 30))
+        
+        body_lines = [
+            f"Total Nodes Visited: {metrics_dict.get('visited_count', 0)}",
+            f"Final Path Cost: {metrics_dict.get('path_cost', 0)}",
+            f"Compute Time: {metrics_dict.get('execution_time', 0.0):.2f} ms",
+            "",
+            "Press [C] to clear and reset."
+        ]
+        
+        for i, line in enumerate(body_lines):
+            line_surface = self.popup_body_font.render(line, True, self.sidebar_text_color)
+            target_display_surface.blit(line_surface, (popup_x + 40, popup_y + 80 + (i * 25)))
 
     def render_complete_environment_frame(self, target_display_surface, environment_manager):
-        """Orchestrates the drawing of the grid background, nodes, node weights, and structural lines."""
-        # Clear the grid area
         target_display_surface.fill(WHITE)
-        
-        # Draw every individual node (Colored rectangles + Terrain Weights)
         for current_node_row in environment_manager.grid_matrix:
             for individual_grid_node in current_node_row:
                 render_node_to_surface(
-                    target_display_surface, 
-                    individual_grid_node,
-                    text_font=self.node_weight_font,
-                    text_color=self.node_text_color
+                    target_display_surface, individual_grid_node, 
+                    text_font=self.node_weight_font, text_color=self.node_text_color
                 )
-
-        # Draw the structural grid lines over the nodes
         render_grid_structural_lines(
-            target_display_surface, 
-            environment_manager.total_row_count, 
-            environment_manager.total_column_count,
-            self.grid_pixel_width # Assuming the nodes scale proportionally based on width
+            target_display_surface, environment_manager.total_row_count, 
+            environment_manager.total_column_count, self.grid_pixel_width
         )
