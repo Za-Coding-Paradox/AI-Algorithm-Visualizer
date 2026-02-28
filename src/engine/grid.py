@@ -9,10 +9,13 @@ class GridNode:
         self.pixel_x_coordinate = row_index * pixel_width
         self.pixel_y_coordinate = column_index * pixel_width
         self.current_color = EMPTY_COLOR
+        
         self.pixel_width = pixel_width
         self.total_row_count = total_row_count
         self.total_column_count = total_column_count
-        
+       
+        self.movement_cost_weight = random.randint(1, 9)
+
         self.accessible_neighbors = []
         self.previous_traversal_node = None
         self.cost_from_start_node = float("inf")
