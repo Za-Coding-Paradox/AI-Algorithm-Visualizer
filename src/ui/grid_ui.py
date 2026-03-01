@@ -35,8 +35,8 @@ def render_node_to_surface(display_surface, node_object, text_font=None, text_co
         (
             node_object.pixel_x_coordinate, 
             node_object.pixel_y_coordinate, 
-            node_object.pixel_width,
-            node_object.pixel_width
+            node_object.pixel_width,        # horizontal length
+            node_object.pixel_width         # verticla length
         )
     )
 
@@ -47,7 +47,8 @@ def render_node_to_surface(display_surface, node_object, text_font=None, text_co
         
         # Create the text image
         text_surface = text_font.render(weight_string, True, TEXT_COLOR)
-        
+        # render(tesxt, antialias, color)
+
         # Calculate the exact center of this specific node
         node_center_x = node_object.pixel_x_coordinate + (node_object.pixel_width // 2)
         node_center_y = node_object.pixel_y_coordinate + (node_object.pixel_width // 2)

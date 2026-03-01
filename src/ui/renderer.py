@@ -2,7 +2,7 @@ import pygame
 from ui.constants import WHITE
 from ui.grid_ui import render_node_to_surface, render_grid_structural_lines
 
-# --- NEW: Import our modular UI functions ---
+# Import our modular UI functions 
 from ui.dashboard_ui import render_metrics_dashboard, render_result_popup_overlay
 
 class ModernInformationRenderer:

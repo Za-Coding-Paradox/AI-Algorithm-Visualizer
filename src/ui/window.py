@@ -3,6 +3,7 @@ import pygame
 class ApplicationDisplayWindow:
     def __init__(self, total_window_width, total_window_height, window_caption="AI Algorithm Visualizer"):
         """Initializes the main Pygame display surface."""
+
         self.total_window_width = total_window_width
         self.total_window_height = total_window_height
         

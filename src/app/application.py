@@ -86,7 +86,7 @@ class PathfindingVisualizerApp:
 
             self.display_window.refresh_display_state()
 
-            # --- RUNNING STATE (Search Animation) ---
+            # RUNNING STATE (Search Animation) 
             if self.current_app_state == APP_STATE_RUNNING:
                 if len(self.active_execution_trace) > 0:
                     steps_per_frame = 5 
@@ -108,7 +108,7 @@ class PathfindingVisualizerApp:
                     else:
                         self.current_app_state = APP_STATE_RESULT
 
-            # --- TRANSIT STATE (Dynamic Obstacles & Agent Movement) ---
+            # TRANSIT STATE (Dynamic Obstacles & Agent Movement) 
             elif self.current_app_state == APP_STATE_TRANSIT:
                 self.transit_timer += 1
                 
@@ -140,7 +140,7 @@ class PathfindingVisualizerApp:
                             self.metrics_data["success"] = False # Reset flag while it re-animates
                             self.current_app_state = APP_STATE_RUNNING # Animate the new search
 
-            # --- INPUT HANDLING ---
+            # INPUT HANDLING 
             for current_event in pygame.event.get():
                 if current_event.type == pygame.QUIT:
                     application_is_running = False
