@@ -96,3 +96,15 @@ class SimulationEnvironment:
             "start": self.agent_start_node,
             "goal": self.navigation_goal_node
         }
+
+    def clear_search_visuals(self):
+        """Clears algorithmic colors to prep for dynamic re-planning."""
+        
+        for row in self.grid_matrix:
+            for node in row:
+                if node.current_color in [VISITED_COLOR, FRONTIER_COLOR, PATH_COLOR]:
+                    node.reset_to_default_state()
+        
+        # Re-assert start and goal colors
+        if self.agent_start_node: self.agent_start_node.set_as_agent_start()
+        if self.navigation_goal_node: self.navigation_goal_node.set_as_navigation_goal()
